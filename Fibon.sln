@@ -8,6 +8,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fibon.messages", "Fibon.mes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fibon.service", "Fibon.service\Fibon.service.csproj", "{A81F5884-3E3A-4E4E-838F-C30FA53B520D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{8B217040-8A85-418F-A107-A51A435F2430}"
+	ProjectSection(SolutionItems) = preProject
+		dotnetPublish.sh = dotnetPublish.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,0 +1,27 @@
+version: "2"
+
+services: 
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - rabbitmq
+    command: rabbitmq:5672
+
+  api:
+    image: shather/fibon-api
+    links:
+       - rabbitmq
+    ports:
+      - '5000:5000'
+
+  service:
+    image: shather/fibon-service
+    links:
+       - rabbitmq
+    ports:
+      - '5050:5050'
+
+  rabbitmq:
+    image: rabbitmq:latest
+    ports: 
+      - '5672:5672'
