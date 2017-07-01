@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fibon.api.Framework;
+using Fibon.api.Handlers;
+using Fibon.api.Repository;
+using Fibon.messages.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +36,7 @@ namespace Fibon.api
             //container IoC
             // Add framework services.
             services.AddMvc();
+            services.AddSingleton<IRepository>(_ => new MemoryRepo());
             this.ConfigureRabbitMq(services);
         }
 
@@ -43,6 +47,7 @@ namespace Fibon.api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
             app.UseMvc();
+            this.ConfigureRabbitMqSubscriptions(app); this.ConfigureRabbitMqSubscriptions(app);
         }
 
         private void ConfigureRabbitMq(IServiceCollection services)
@@ -55,6 +60,17 @@ namespace Fibon.api
             var client = BusClientFactory.CreateDefault(options);
 
             services.AddSingleton<IBusClient>(p => client);
+            services.AddScoped<IEventHandler<ValueCalculatedEvent>, ValueCalculatedEventHandler>();
+        }
+
+        private void ConfigureRabbitMqSubscriptions(IApplicationBuilder builder)
+        {
+            var client = builder.ApplicationServices.GetService<IBusClient>();
+            var handler = builder.ApplicationServices.GetService<IEventHandler<ValueCalculatedEvent>>();
+            client.SubscribeAsync<ValueCalculatedEvent>(async (e, context) =>
+            {
+               await handler.HandleAsync(e);
+            });
         }
     }
 }
